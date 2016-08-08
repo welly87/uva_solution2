@@ -1,54 +1,75 @@
 package com.company;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Created by Welly on 8/8/2016.
+ */
 public class Main {
 
-    static int m;
-    static char[][] map;
-    static int [] dx = {1,-1,0,0,1,-1,1,-1};
-    static int [] dy = {0,0,1,-1,-1,-1,1,1};
-    
+    static ArrayList<Integer>[] AdjList;
+    static boolean[] visited;
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+        int noCase = sc.nextInt();
+        String l = sc.nextLine();
+        System.out.println(l);
 
-        while (sc.hasNext()) {
-            m = sc.nextInt();
-            System.out.println(m);
-            sc.nextLine();
 
-            map = new char[m][m];
+        for (int i = 0; i < noCase; i++) {
 
-            for (int i = 0; i < m; i++) {
-                map[i] = sc.nextLine().toCharArray();
+            int noVertices = sc.nextLine().charAt(0) - 'A' + 1;
+
+            AdjList = (ArrayList<Integer>[]) new ArrayList[noVertices];
+
+            for (int j = 0; j < noVertices; j++) {
+                AdjList[j] = new ArrayList<>();
             }
+
+            visited = new boolean[noVertices];
 
             int count = 0;
-            for (int i = 0; i < m; i++) {
-                for (int j = 0; j < m; j++) {
-                    if (map[i][j] == '1') {
+
+            while (true) {
+                String line = sc.nextLine();
+
+                if (line.isEmpty()) break;
+
+                int from = line.charAt(0) - 'A';
+                int to = line.charAt(1) - 'A';
+
+                AdjList[from].add(to);
+                AdjList[to].add(from);
+            }
+// print graph
+
+//            for (int j = 0; j < noVertices; j++) {
+//                System.out.print(j + " => ");
+//
+//                for (int v : AdjList[j]) {
+//                    System.out.print(v + " ");
+//                }
+//                System.out.println();
+//            }
+
+                for (int j = 0; j < noVertices; j++) {
+                    if (!visited[j]) {
+                        dfs(j);
                         count++;
-                        floodfill(i, j);
                     }
                 }
-            }
-
-            System.out.println(count);
+                System.out.println(count);
         }
-
-
     }
 
-    private static void floodfill(int x, int y) {
-        if (x < 0 || y < 0 || x >= m || y >= m) return;
+    private static void dfs(int i) {
+        visited[i] = true;
 
-        if (map[x][y] != '1') return;
-
-        map[x][y] = '0';
-
-        for (int i = 0; i < dx.length; i++) {
-            for (int j = 0; j < dy.length; j++) {
-                floodfill(x + dx[i], y + dy[j]);
+        for (int v : AdjList[i]) {
+            if (!visited[v]) {
+                dfs(v);
             }
         }
     }
